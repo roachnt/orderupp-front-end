@@ -19,7 +19,7 @@ class Checkout extends React.Component {
       locale: "auto",
       token: token =>
         axios.post(
-          "https://order-system-express-payment-hlubljnnfu.now.sh/payment",
+          "https://order-system-express-payment-gfxejyunst.now.sh/payment",
           {
             token,
             formData,
