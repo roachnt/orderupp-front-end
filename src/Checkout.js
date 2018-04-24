@@ -18,12 +18,15 @@ class Checkout extends React.Component {
       image: "https://stripe.com/img/documentation/checkout/marketplace.png",
       locale: "auto",
       token: token =>
-        axios.post("http://localhost:3000/payment", {
-          token,
-          formData,
-          order: this.props.order,
-          user: this.props.user
-        })
+        axios.post(
+          "https://order-system-express-payment-hlubljnnfu.now.sh/payment",
+          {
+            token,
+            formData,
+            order: this.props.order,
+            user: this.props.user
+          }
+        )
       // TODO: upon response, take to failure or success page
     });
     if (document.querySelector("form"))
