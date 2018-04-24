@@ -12,6 +12,13 @@ export default function orderReducer(state = {}, { type, payload }) {
     for (let j = 0; j < payload.options.length; j++) {
       items[`item${size}`]["options"][`option${j + 1}`] = payload.options[j];
     }
+    localStorage.setItem(
+      "order",
+      JSON.stringify({
+        items,
+        size: parseInt(size, 10)
+      })
+    );
     return { items, size };
   } else if (type === "REMOVE_ITEM") {
     const order = { ...state };
@@ -19,6 +26,13 @@ export default function orderReducer(state = {}, { type, payload }) {
       delete order["items"][payload];
       order["size"]--;
     } else console.log("Item does not exist");
+    localStorage.setItem(
+      "order",
+      JSON.stringify({
+        items: order["items"],
+        size: parseInt(order["size"], 10)
+      })
+    );
     return order;
   } else if (type === "SET_ORDER") {
     localStorage.setItem(

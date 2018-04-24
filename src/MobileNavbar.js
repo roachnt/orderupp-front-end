@@ -1,6 +1,7 @@
 import React from "react";
 import { Menu, Button, Icon, Grid, Label } from "semantic-ui-react";
 import { withRouter, Link } from "react-router-dom";
+import { logout } from "./authFunctions";
 
 const MobileNavbar = withRouter(props => (
   <Grid className="desktop-navbar" style={{ height: "auto" }}>
@@ -35,7 +36,7 @@ const MobileNavbar = withRouter(props => (
                   </Button.Content>
                 </Button>
               </Menu.Item>
-              <Menu.Item onClick={() => props.logout(props.history)}>
+              <Menu.Item onClick={() => logout(props.history)}>
                 <Button>Logout</Button>
               </Menu.Item>
             </React.Fragment>

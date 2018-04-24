@@ -1,9 +1,8 @@
 import React from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { Router, Switch, Route } from "react-router-dom";
 import Media from "react-media";
 import { connect } from "react-redux";
 
-import { auth, facebookProvider } from "./firebase";
 import App from "./App";
 import LoginForm from "./Login";
 import RegisterForm from "./Register";
@@ -12,94 +11,26 @@ import Orders from "./Orders";
 import Cart from "./Cart";
 import Checkout from "./Checkout";
 import MobileNavbar from "./MobileNavbar";
+import history from "./history";
 
-import { loginUserAction } from "./actions/userActions";
 import { setOrderAction } from "./actions/orderActions";
 
-class Router extends React.Component {
-  // Authentication functions
-
-  loginWithFacebook = history => {
-    auth
-      .signInWithPopup(facebookProvider)
-      .then(result => {
-        this.props.loginUser(result.user);
-      })
-      .then(() => history.push("/"));
-  };
-  loginWithEmail = (email, password) =>
-    auth
-      .signInWithEmailAndPassword(email, password)
-      .then(res => {
-        this.props.loginUser(res.user);
-      })
-      .catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log({ errorCode, errorMessage });
-      });
-
-  registerWithEmail = (e, history) => {
-    e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then(() => history.push("/"))
-      .catch(err => {
-        const errorCode = err.code;
-        const errorMessage = err.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-      });
-  };
-
-  logout = history => {
-    auth
-      .signOut()
-      .then(() => {
-        this.props.loginUser(null);
-      })
-      .then(() => history.push("/"));
-  };
-
-  setOrderDelivery = delivery => {
-    const order = { ...this.state.order };
-    order["delivery"] = delivery;
-    this.setState({ order });
-  };
-
-  componentDidUpdate() {
-    if (this.props.order)
-      localStorage.setItem(
-        "order",
-        JSON.stringify({
-          ...this.props.order,
-          size: parseInt(this.props.order["size"], 10)
-        })
-      );
-  }
-
+class RouterComponent extends React.Component {
   render() {
     return (
-      <BrowserRouter>
+      <Router history={history}>
         <React.Fragment>
           <Media query="(min-width: 768px)">
             {matches =>
               matches ? (
-                <Navbar {...this.props} logout={this.logout} />
+                <Navbar {...this.props} />
               ) : (
-                <MobileNavbar {...this.props} logout={this.logout} />
+                <MobileNavbar {...this.props} />
               )
             }
           </Media>
           <Switch>
-            <Route
-              exact
-              path="/"
-              render={() => <App user={this.props.user} logout={this.logout} />}
-            />
+            <Route exact path="/" render={() => <App />} />
             <Route
               exact
               path="/login"
@@ -107,26 +38,14 @@ class Router extends React.Component {
                 this.props.user ? (
                   <div>You're already signed in!</div>
                 ) : (
-                  <LoginForm
-                    {...this.props}
-                    loginWithFacebook={this.loginWithFacebook}
-                    loginWithEmail={this.loginWithEmail}
-                    logout={this.logout}
-                  />
+                  <LoginForm {...this.props} />
                 )
               }
             />
             <Route
               exact
               path="/register"
-              render={() => (
-                <RegisterForm
-                  {...this.props}
-                  loginWithFacebook={this.loginWithFacebook}
-                  logout={this.logout}
-                  registerWithEmail={this.registerWithEmail}
-                />
-              )}
+              render={() => <RegisterForm {...this.props} />}
             />
             <Route
               exact
@@ -139,38 +58,21 @@ class Router extends React.Component {
                 )
               }
             />
-            <Route
-              exact
-              path="/cart"
-              render={() => (
-                <Cart
-                  loginWithFacebook={this.loginWithFacebook}
-                  logout={this.logout}
-                  registerWithEmail={this.registerWithEmail}
-                />
-              )}
-            />
+            <Route exact path="/cart" render={() => <Cart />} />
             <Route
               exact
               path="/checkout"
-              render={() => (
-                <Checkout
-                  {...this.props}
-                  order={this.props.order}
-                  logout={this.logout}
-                />
-              )}
+              render={() => <Checkout {...this.props} />}
             />
           </Switch>
         </React.Fragment>
-      </BrowserRouter>
+      </Router>
     );
   }
 }
 
 const mapStateToProps = state => state;
 const mapActionsToProps = {
-  loginUser: loginUserAction,
   setOrder: setOrderAction
 };
-export default connect(mapStateToProps, mapActionsToProps)(Router);
+export default connect(mapStateToProps, mapActionsToProps)(RouterComponent);

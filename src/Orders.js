@@ -1,21 +1,25 @@
 import React, { Component } from "react";
+import { Loader } from "semantic-ui-react";
 import { connect } from "react-redux";
 
 import firebase from "./firebase";
 
 class Orders extends Component {
   state = {
-    orders: []
+    orders: null
   };
   componentDidMount() {
-    const ordersRef = firebase.database().ref("orders");
+    const ordersRef = firebase
+      .database()
+      .ref(`users/${this.props.user.uid}/orders`);
     ordersRef.on("value", snapshot => {
       let orders = snapshot.val();
       let newState = [];
       for (let order in orders) {
         newState.push({
           id: order,
-          user: orders[order]["user"]
+          items: orders[order]["items"],
+          size: orders[order]["size"]
         });
       }
       this.setState({
@@ -27,8 +31,14 @@ class Orders extends Component {
   render() {
     return (
       <React.Fragment>
-        <h1>Orders</h1>
-        <ul>{this.state.orders.map(order => <li>{order.user}</li>)}</ul>
+        <h1>Past Orders</h1>
+        {this.state.orders ? (
+          <ul>
+            {this.state.orders.map(order => <li>{JSON.stringify(order)}</li>)}
+          </ul>
+        ) : (
+          <Loader active inline="centered" />
+        )}
       </React.Fragment>
     );
   }

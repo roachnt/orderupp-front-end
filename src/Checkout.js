@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Grid } from "semantic-ui-react";
 import stateOptions from "./stateOptions";
 import axios from "axios";
+import { connect } from "react-redux";
 
 class Checkout extends React.Component {
   state = {
@@ -23,12 +24,12 @@ class Checkout extends React.Component {
           order: this.props.order,
           user: this.props.user
         })
+      // TODO: upon response, take to failure or success page
     });
     if (document.querySelector("form"))
       document.querySelector("form").addEventListener("submit", function(e) {
         // Open Checkout with further options:
         e.preventDefault();
-        console.log(e.target.name);
         formData.name = e.target.name.value;
         formData.delivery = e.target.delivery.checked;
 
@@ -106,4 +107,6 @@ class Checkout extends React.Component {
   }
 }
 
-export default Checkout;
+const mapStateToProps = state => state;
+
+export default connect(mapStateToProps)(Checkout);

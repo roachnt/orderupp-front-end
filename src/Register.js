@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Button,
   Form,
@@ -8,10 +8,10 @@ import {
   Message,
   Segment
 } from "semantic-ui-react";
-
+import { loginWithFacebook, registerWithEmail } from "./authFunctions";
 import FacebookButton from "./FacebookButton";
 
-const RegisterForm = withRouter(props => (
+const RegisterForm = props => (
   <div className="login-form">
     {/*
       Heads up! The styles below are necessary for the correct render of this example.
@@ -32,10 +32,7 @@ const RegisterForm = withRouter(props => (
         <Header as="h2" color="red" textAlign="center">
           Sign up for an account
         </Header>
-        <Form
-          size="large"
-          onSubmit={e => props.registerWithEmail(e, props.history)}
-        >
+        <Form size="large" onSubmit={e => registerWithEmail(e)}>
           <Segment stacked>
             <Form.Input
               fluid
@@ -56,16 +53,16 @@ const RegisterForm = withRouter(props => (
             <Button type="red" color="red" fluid size="large">
               Sign Up
             </Button>
-            <br />
-            <FacebookButton loginWithFacebook={props.loginWithFacebook} />
           </Segment>
         </Form>
+        <br />
+        <FacebookButton loginWithFacebook={loginWithFacebook} />
         <Message>
           Already have an account? <Link to="/login">Log in</Link>
         </Message>
       </Grid.Column>
     </Grid>
   </div>
-));
+);
 
 export default RegisterForm;

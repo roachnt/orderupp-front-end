@@ -9,6 +9,10 @@ import {
   Segment
 } from "semantic-ui-react";
 import FacebookButton from "./FacebookButton";
+import { auth } from "./firebase";
+import { loginUserAction } from "./actions/userActions";
+import { connect } from "react-redux";
+import history from "./history";
 
 class LoginForm extends React.Component {
   render() {
@@ -40,10 +44,21 @@ class LoginForm extends React.Component {
             <Form
               size="large"
               onSubmit={e =>
-                this.props.loginWithEmail(
-                  e.target.email.value,
-                  e.target.password.value
-                )
+                auth
+                  .signInWithEmailAndPassword(
+                    e.target.email.value,
+                    e.target.password.value
+                  )
+                  .then(res => {
+                    this.props.loginUser(res);
+                  })
+                  .then(() => history.push("/"))
+                  .catch(function(error) {
+                    // Handle Errors here.
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    console.log({ errorCode, errorMessage });
+                  })
               }
             >
               <Segment stacked>
@@ -63,15 +78,13 @@ class LoginForm extends React.Component {
                   type="password"
                 />
 
-                <Button color="red" fluid size="large">
+                <Button type="submit" color="red" fluid size="large">
                   Login
                 </Button>
-                <br />
-                <FacebookButton
-                  loginWithFacebook={this.props.loginWithFacebook}
-                />
               </Segment>
             </Form>
+            <br />
+            <FacebookButton />
             <Message>
               New to us? <Link to="/register">Sign Up</Link>
             </Message>
@@ -82,4 +95,8 @@ class LoginForm extends React.Component {
   }
 }
 
-export default LoginForm;
+const mapActionsToProps = {
+  loginUser: loginUserAction
+};
+
+export default connect(state => state, mapActionsToProps)(LoginForm);

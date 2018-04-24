@@ -18,7 +18,7 @@ const store = createStore(
     order: localStorage.getItem("order")
       ? JSON.parse(localStorage.getItem("order"))
       : { items: {}, size: 0 },
-    items: []
+    items: null
   },
   window.devToolsExtension && window.devToolsExtension()
 );
