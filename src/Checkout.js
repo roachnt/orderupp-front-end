@@ -16,6 +16,7 @@ class Checkout extends React.Component {
 
   componentDidMount() {
     let formData = {};
+    const setOrder = this.props.setOrder;
     const handler = window.StripeCheckout.configure({
       key: "pk_test_cfwyi1i2UVURudxM3G3lKieh",
       image: "https://stripe.com/img/documentation/checkout/marketplace.png",
@@ -35,7 +36,7 @@ class Checkout extends React.Component {
           .then(function(response) {
             if (response.data.success) {
               console.log(response.data);
-              this.props.setOrder({ size: 0, items: {} });
+              setOrder({ size: 0, items: {} });
               history.push("/order-success");
             } else history.push("/order-error");
           })
