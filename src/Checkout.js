@@ -3,6 +3,9 @@ import { Form, Grid } from "semantic-ui-react";
 import stateOptions from "./stateOptions";
 import axios from "axios";
 import { connect } from "react-redux";
+import history from "./history";
+
+import { setOrderAction } from "./actions/orderActions";
 
 class Checkout extends React.Component {
   state = {
@@ -30,10 +33,13 @@ class Checkout extends React.Component {
             }
           )
           .then(function(response) {
-            console.log(response);
+            if (response.data.success) {
+              this.props.setOrder({ size: 0, items: {} });
+              history.push("/order-success");
+            } else history.push("/order-error");
           })
           .catch(function(error) {
-            console.log(error);
+            history.push("/order-error");
           })
       // TODO: upon response, take to failure or success page
     });
@@ -119,5 +125,8 @@ class Checkout extends React.Component {
 }
 
 const mapStateToProps = state => state;
+const mapActionsToProps = {
+  setOrder: setOrderAction
+};
 
-export default connect(mapStateToProps)(Checkout);
+export default connect(mapStateToProps, mapActionsToProps)(Checkout);
