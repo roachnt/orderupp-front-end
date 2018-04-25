@@ -14,6 +14,27 @@ class Checkout extends React.Component {
 
   handleChange = (e, { value }) => this.setState({ value });
 
+  makePayment = token =>
+    axios
+      .post("https://order-system-express-payment-pxvajvegim.now.sh/payment", {
+        token,
+        formData,
+        order: this.props.order,
+        user: this.props.user,
+        createdAt: Date.now()
+      })
+      .then(function(response) {
+        if (response.data.success) {
+          console.log(response.data);
+          this.props.setOrder({ size: 0, items: {} });
+          history.push("/order-success");
+        } else history.push("/order-error");
+      })
+      .catch(function(error) {
+        console.log(error);
+        history.push("/order-error");
+      });
+
   componentDidMount() {
     let formData = {};
     const setOrder = this.props.setOrder;
@@ -21,30 +42,7 @@ class Checkout extends React.Component {
       key: "pk_test_cfwyi1i2UVURudxM3G3lKieh",
       image: "https://stripe.com/img/documentation/checkout/marketplace.png",
       locale: "auto",
-      token: function(token) {
-        axios
-          .post(
-            "https://order-system-express-payment-pxvajvegim.now.sh/payment",
-            {
-              token,
-              formData,
-              order: this.props.order,
-              user: this.props.user,
-              createdAt: Date.now()
-            }
-          )
-          .then(function(response) {
-            if (response.data.success) {
-              console.log(response.data);
-              setOrder({ size: 0, items: {} });
-              history.push("/order-success");
-            } else history.push("/order-error");
-          })
-          .catch(function(error) {
-            console.log(error);
-            history.push("/order-error");
-          });
-      }
+      token: this.makePayment
       // TODO: upon response, take to failure or success page
     });
     if (document.querySelector("form"))
