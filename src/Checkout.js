@@ -20,7 +20,7 @@ class Checkout extends React.Component {
       key: "pk_test_cfwyi1i2UVURudxM3G3lKieh",
       image: "https://stripe.com/img/documentation/checkout/marketplace.png",
       locale: "auto",
-      token: token =>
+      token: function(token) {
         axios
           .post(
             "https://order-system-express-payment-pxvajvegim.now.sh/payment",
@@ -42,7 +42,8 @@ class Checkout extends React.Component {
           .catch(function(error) {
             console.log(error);
             history.push("/order-error");
-          })
+          });
+      }
       // TODO: upon response, take to failure or success page
     });
     if (document.querySelector("form"))
