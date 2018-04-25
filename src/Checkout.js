@@ -34,6 +34,7 @@ class Checkout extends React.Component {
           )
           .then(function(response) {
             if (response.data.success) {
+              console.log(response);
               this.props.setOrder({ size: 0, items: {} });
               history.push("/order-success");
             } else history.push("/order-error");
