@@ -34,12 +34,13 @@ class Checkout extends React.Component {
           )
           .then(function(response) {
             if (response.data.success) {
-              console.log(response);
+              console.log(response.data);
               this.props.setOrder({ size: 0, items: {} });
               history.push("/order-success");
             } else history.push("/order-error");
           })
           .catch(function(error) {
+            console.log(error);
             history.push("/order-error");
           })
       // TODO: upon response, take to failure or success page
