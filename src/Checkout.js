@@ -12,45 +12,45 @@ class Checkout extends React.Component {
     value: null
   };
 
-  formData = {};
-
   handleChange = (e, { value }) => this.setState({ value });
 
-  makePayment = token =>
-    axios
-      .post("https://order-system-express-payment-pxvajvegim.now.sh/payment", {
-        token,
-        formData: this.formData,
-        order: this.props.order,
-        user: this.props.user,
-        createdAt: Date.now()
-      })
-      .then(function(response) {
-        if (response.data.success) {
-          console.log(response.data);
-          this.props.setOrder({ size: 0, items: {} });
-          history.push("/order-success");
-        } else history.push("/order-error");
-      })
-      .catch(function(error) {
-        console.log(error);
-        history.push("/order-error");
-      });
-
   componentDidMount() {
+    let setOrder = this.props.setOrder;
+    let formData = {};
     const handler = window.StripeCheckout.configure({
       key: "pk_test_cfwyi1i2UVURudxM3G3lKieh",
       image: "https://stripe.com/img/documentation/checkout/marketplace.png",
       locale: "auto",
-      token: this.makePayment
+      token: token =>
+        axios
+          .post(
+            "https://order-system-express-payment-pxvajvegim.now.sh/payment",
+            {
+              token,
+              formData,
+              order: this.props.order,
+              user: this.props.user,
+              createdAt: Date.now()
+            }
+          )
+          .then(function(response) {
+            if (response.data.success) {
+              setOrder({ size: 0, items: {} });
+              history.push("/order-success");
+            } else history.push("/order-error");
+          })
+          .catch(function(error) {
+            console.log(error);
+            history.push("/order-error");
+          })
       // TODO: upon response, take to failure or success page
     });
     if (document.querySelector("form"))
       document.querySelector("form").addEventListener("submit", function(e) {
         // Open Checkout with further options:
         e.preventDefault();
-        this.formData.name = e.target.name.value;
-        this.formData.delivery = e.target.delivery.checked;
+        formData.name = e.target.name.value;
+        formData.delivery = e.target.delivery.checked;
 
         if (this.dataset.subtotal <= 0) return;
         handler.open({
