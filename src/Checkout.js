@@ -9,13 +9,19 @@ import { setOrderAction } from "./actions/orderActions";
 
 class Checkout extends React.Component {
   state = {
-    value: null
+    value: null,
+    stateValue: null,
+    pay: null
   };
 
   handleChange = (e, { value }) => this.setState({ value });
+  handleChangeDropdown = (e, { value }) => this.setState({ stateValue: value });
+  handleChangePay = (e, { value }) => this.setState({ pay: value });
 
   componentDidMount() {
     let setOrder = this.props.setOrder;
+    let stateValue = this.state.stateValue;
+    let pay = this.state.pay;
     let formData = {};
     const handler = window.StripeCheckout.configure({
       key: "pk_test_cfwyi1i2UVURudxM3G3lKieh",
@@ -24,11 +30,13 @@ class Checkout extends React.Component {
       token: token =>
         axios
           .post(
-            "https://order-system-express-payment-pxvajvegim.now.sh/payment",
+            //"https://order-system-express-payment-pxvajvegim.now.sh/payment",
+            "http://localhost:3000/payment",
             {
               token,
               formData,
               order: this.props.order,
+              delivery: this.state.value === "delivery",
               user: this.props.user,
               createdAt: Date.now()
             }
@@ -45,19 +53,56 @@ class Checkout extends React.Component {
           })
       // TODO: upon response, take to failure or success page
     });
+
+    let order = this.props.order;
+    let value = this.state.value;
+    let user = this.props.user;
+    pay = this.state.pay;
     if (document.querySelector("form"))
       document.querySelector("form").addEventListener("submit", function(e) {
         // Open Checkout with further options:
         e.preventDefault();
         formData.name = e.target.name.value;
         formData.delivery = e.target.delivery.checked;
+        formData.address1 = e.target.address1.value;
+        formData.address2 = e.target.address2.value;
+        formData.city = e.target.city.value;
+        formData.state = stateValue;
+        formData.zip = e.target.zip.value;
+        formData.specialinstructions = e.target.specialinstructions.value;
+        formData.payOnline = pay === "online";
 
-        if (this.dataset.subtotal <= 0) return;
-        handler.open({
-          name: "My Awesome Restaurant",
-          description: "Your Order",
-          amount: this.dataset.subtotal * 100
-        });
+        console.log(this.state);
+        if (pay === "online")
+          handler.open({
+            name: "My Awesome Restaurant",
+            description: "Your Order",
+            amount: this.dataset.subtotal * 100
+          });
+        else {
+          axios
+            .post(
+              //"https://order-system-express-payment-pxvajvegim.now.sh/payment",
+              "http://localhost:3000/payment",
+              {
+                formData,
+                order: order,
+                delivery: value === "delivery",
+                user: user,
+                createdAt: Date.now()
+              }
+            )
+            .then(function(response) {
+              if (response.data.success) {
+                setOrder({ size: 0, items: {} });
+                history.push("/order-success");
+              } else history.push("/order-error");
+            })
+            .catch(function(error) {
+              console.log(error);
+              history.push("/order-error");
+            });
+        }
       });
 
     // Close Checkout on page navigation:
@@ -102,6 +147,7 @@ class Checkout extends React.Component {
                   placeholder="State"
                   name="state"
                   options={stateOptions}
+                  onChange={this.handleChangeDropdown}
                   search
                   selection
                 />
@@ -118,6 +164,22 @@ class Checkout extends React.Component {
               name="specialinstructions"
               placeholder="If you have any special instructions for you order add them here"
             />
+            <Form.Group inline>
+              <Form.Radio
+                label="Pay Online"
+                value="online"
+                name="online"
+                checked={this.state.pay === "online"}
+                onChange={this.handleChangePay}
+              />
+              <Form.Radio
+                label="Pay in Person"
+                value="inperson"
+                name="inperson"
+                checked={this.state.pay === "inperson"}
+                onChange={this.handleChangePay}
+              />
+            </Form.Group>
             <Form.Button>Submit</Form.Button>
           </Form>
         </Grid.Column>
