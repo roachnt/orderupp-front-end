@@ -52,8 +52,8 @@ class Checkout extends React.Component {
   sendPayment = (token, formData) =>
     axios
       .post(
-        //"https://order-system-express-payment-pxvajvegim.now.sh/payment",
-        "http://localhost:3000/payment",
+        "https://order-system-express-payment-haosvjilrq.now.sh/payment",
+        //"http://localhost:3000/payment",
         {
           token,
           formData,
