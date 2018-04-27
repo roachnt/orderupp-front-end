@@ -14,100 +14,72 @@ class Checkout extends React.Component {
     pay: null
   };
 
+  handler = null;
+
   handleChange = (e, { value }) => this.setState({ value });
   handleChangeDropdown = (e, { value }) => this.setState({ stateValue: value });
   handleChangePay = (e, { value }) => this.setState({ pay: value });
+  handleFormSubmit = e => {
+    e.preventDefault();
+    let formData = {
+      name: e.target.name.value,
+      delivery: e.target.delivery.checked,
+      address1: e.target.address1.value,
+      address2: e.target.address2.value,
+      city: e.target.city.value,
+      state: this.state.stateValue,
+      zip: e.target.zip.value,
+      specialinstructions: e.target.specialinstructions.value,
+      payOnline: this.state.pay === "online"
+    };
 
-  componentDidMount() {
-    let setOrder = this.props.setOrder;
-    let stateValue = this.state.stateValue;
-    let pay = this.state.pay;
-    let formData = {};
-    const handler = window.StripeCheckout.configure({
-      key: "pk_test_cfwyi1i2UVURudxM3G3lKieh",
-      image: "https://stripe.com/img/documentation/checkout/marketplace.png",
-      locale: "auto",
-      token: token =>
-        axios
-          .post(
-            //"https://order-system-express-payment-pxvajvegim.now.sh/payment",
-            "http://localhost:3000/payment",
-            {
-              token,
-              formData,
-              order: this.props.order,
-              delivery: this.state.value === "delivery",
-              user: this.props.user,
-              createdAt: Date.now()
-            }
-          )
-          .then(function(response) {
-            if (response.data.success) {
-              setOrder({ size: 0, items: {} });
-              history.push("/order-success");
-            } else history.push("/order-error");
-          })
-          .catch(function(error) {
-            console.log(error);
-            history.push("/order-error");
-          })
-      // TODO: upon response, take to failure or success page
-    });
-
-    let order = this.props.order;
-    let value = this.state.value;
-    let user = this.props.user;
-    pay = this.state.pay;
-    if (document.querySelector("form"))
-      document.querySelector("form").addEventListener("submit", function(e) {
-        // Open Checkout with further options:
-        e.preventDefault();
-        formData.name = e.target.name.value;
-        formData.delivery = e.target.delivery.checked;
-        formData.address1 = e.target.address1.value;
-        formData.address2 = e.target.address2.value;
-        formData.city = e.target.city.value;
-        formData.state = stateValue;
-        formData.zip = e.target.zip.value;
-        formData.specialinstructions = e.target.specialinstructions.value;
-        formData.payOnline = pay === "online";
-
-        console.log(this.state);
-        if (pay === "online")
-          handler.open({
-            name: "My Awesome Restaurant",
-            description: "Your Order",
-            amount: this.dataset.subtotal * 100
-          });
-        else {
-          axios
-            .post(
-              //"https://order-system-express-payment-pxvajvegim.now.sh/payment",
-              "http://localhost:3000/payment",
-              {
-                formData,
-                order: order,
-                delivery: value === "delivery",
-                user: user,
-                createdAt: Date.now()
-              }
-            )
-            .then(function(response) {
-              if (response.data.success) {
-                setOrder({ size: 0, items: {} });
-                history.push("/order-success");
-              } else history.push("/order-error");
-            })
-            .catch(function(error) {
-              console.log(error);
-              history.push("/order-error");
-            });
+    if (this.state.pay === "online") {
+      this.handler = window.StripeCheckout.configure({
+        key: "pk_test_cfwyi1i2UVURudxM3G3lKieh",
+        image: "https://stripe.com/img/documentation/checkout/marketplace.png",
+        locale: "auto",
+        token: token => this.sendPayment(token.id, formData)
+      });
+      this.handler.open({
+        name: "My Awesome Restaurant",
+        description: "Your Order",
+        amount: 100
+      });
+    } else {
+      this.sendPayment(null, formData);
+    }
+  };
+  sendPayment = (token, formData) =>
+    axios
+      .post(
+        //"https://order-system-express-payment-pxvajvegim.now.sh/payment",
+        "http://localhost:3000/payment",
+        {
+          token,
+          formData,
+          order: this.props.order,
+          delivery: this.state.value === "delivery",
+          user: this.props.user,
+          createdAt: Date.now()
         }
+      )
+      .then(response => {
+        console.log("----props----");
+        console.log(this.props);
+        if (response.data.success) {
+          this.props.setOrder({ size: 0, items: {} });
+          history.push("/order-success");
+        } else history.push("/order-error");
+      })
+      .catch(function(error) {
+        console.log(error);
+        history.push("/order-error");
       });
 
+  componentDidMount() {
     // Close Checkout on page navigation:
     window.addEventListener("popstate", function() {
-      handler.close();
+      this.handler.close();
     });
   }
 
@@ -115,7 +87,7 @@ class Checkout extends React.Component {
     return (
       <Grid>
         <Grid.Column width={10} style={{ margin: "0 auto" }}>
-          <Form>
+          <Form onSubmit={this.handleFormSubmit}>
             <Form.Input fluid label="Name" name="name" />
             <Form.Group inline>
               <Form.Radio
