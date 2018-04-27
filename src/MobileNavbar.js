@@ -1,7 +1,9 @@
 import React from "react";
 import { Menu, Button, Icon, Grid, Label } from "semantic-ui-react";
 import { withRouter, Link } from "react-router-dom";
-import { logout } from "./authFunctions";
+import history from "./history";
+import { loginUserAction } from "./actions/userActions";
+import { connect } from "react-redux";
 
 const MobileNavbar = withRouter(props => (
   <Grid className="desktop-navbar" style={{ height: "auto" }}>
@@ -29,23 +31,23 @@ const MobileNavbar = withRouter(props => (
               <Menu.Item>
                 <Button
                   style={{ background: "none" }}
-                  onClick={() => props.history.push("/cart")}
+                  onClick={() => history.push("/cart")}
                 >
                   <Button.Content>
                     <Icon name="list layout" size="huge" />
                   </Button.Content>
                 </Button>
               </Menu.Item>
-              <Menu.Item onClick={() => logout(props.history)}>
+              <Menu.Item onClick={() => props.loginUser(null)}>
                 <Button>Logout</Button>
               </Menu.Item>
             </React.Fragment>
           ) : (
             <React.Fragment>
-              <Menu.Item onClick={() => props.history.push("/login")}>
+              <Menu.Item onClick={() => history.push("/login")}>
                 <Button color="red">Login</Button>
               </Menu.Item>
-              <Menu.Item onClick={() => props.history.push("/register")}>
+              <Menu.Item onClick={() => history.push("/register")}>
                 <Button color="red">Sign Up</Button>
               </Menu.Item>
             </React.Fragment>
@@ -53,7 +55,7 @@ const MobileNavbar = withRouter(props => (
           <Menu.Item>
             <Button
               style={{ background: "none" }}
-              onClick={() => props.history.push("/cart")}
+              onClick={() => history.push("/cart")}
             >
               <Button.Content>
                 <Icon name="shop" size="huge" />
@@ -74,4 +76,7 @@ const MobileNavbar = withRouter(props => (
   </Grid>
 ));
 
-export default MobileNavbar;
+const mapActionsToProps = {
+  loginUser: loginUserAction
+};
+export default connect(state => state, mapActionsToProps)(MobileNavbar);

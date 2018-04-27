@@ -1,7 +1,6 @@
 import React from "react";
 import { Form, Grid } from "semantic-ui-react";
 import stateOptions from "./stateOptions";
-import axios from "axios";
 import { connect } from "react-redux";
 import history from "./history";
 
@@ -50,23 +49,25 @@ class Checkout extends React.Component {
     }
   };
   sendPayment = (token, formData) =>
-    axios
-      .post(
-        "https://order-system-express-payment-haosvjilrq.now.sh/payment",
-        //"http://localhost:3000/payment",
-        {
-          token,
-          formData,
-          order: this.props.order,
-          delivery: this.state.value === "delivery",
-          user: this.props.user,
-          createdAt: Date.now()
-        }
-      )
-      .then(response => {
-        console.log("----props----");
-        console.log(this.props);
-        if (response.data.success) {
+    fetch("https://order-system-express-payment-qzmoiflpjq.now.sh/payment", {
+      //fetch("http://localhost:3000/payment", {
+      method: "POST",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        token,
+        formData,
+        order: this.props.order,
+        delivery: this.state.value === "delivery",
+        user: this.props.user,
+        createdAt: Date.now()
+      })
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (json.success) {
           this.props.setOrder({ size: 0, items: {} });
           history.push("/order-success");
         } else history.push("/order-error");
