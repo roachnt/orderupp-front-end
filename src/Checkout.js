@@ -3,6 +3,7 @@ import { Form, Grid } from "semantic-ui-react";
 import stateOptions from "./stateOptions";
 import { connect } from "react-redux";
 import history from "./history";
+import firebase from "./firebase";
 
 import { setOrderAction } from "./actions/orderActions";
 
@@ -31,6 +32,15 @@ class Checkout extends React.Component {
       specialinstructions: e.target.specialinstructions.value,
       payOnline: this.state.pay === "online"
     };
+    const itemsRef = firebase.database().ref("/items");
+    let subtotal;
+    itemsRef.on("value", snapshot => {
+      let items = snapshot.val();
+      subtotal = Object.values(this.props.order.items).reduce(
+        (total, item) => total + items[item.itemId].price,
+        0
+      );
+    });
 
     if (this.state.pay === "online") {
       this.handler = window.StripeCheckout.configure({
@@ -42,14 +52,14 @@ class Checkout extends React.Component {
       this.handler.open({
         name: "My Awesome Restaurant",
         description: "Your Order",
-        amount: 100
+        amount: subtotal * 100
       });
     } else {
       this.sendPayment(null, formData);
     }
   };
   sendPayment = (token, formData) =>
-    fetch("https://order-system-express-payment-qzmoiflpjq.now.sh/payment", {
+    fetch("https://order-system-express-payment-ygzbclyemp.now.sh/payment", {
       //fetch("http://localhost:3000/payment", {
       method: "POST",
       headers: {
