@@ -59,7 +59,7 @@ class Checkout extends React.Component {
     }
   };
   sendPayment = (token, formData) =>
-    fetch("https://order-system-express-payment-xjkxdywvyj.now.sh/payment", {
+    fetch("https://order-system-express-payment-aaffsllyzq.now.sh/payment", {
       //fetch("http://localhost:3000/payment", {
       method: "POST",
       headers: {
