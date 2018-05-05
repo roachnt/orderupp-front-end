@@ -59,7 +59,7 @@ class Checkout extends React.Component {
     }
   };
   sendPayment = (token, formData) =>
-    fetch("https://order-system-express-payment-ywvhgohzqh.now.sh/payment", {
+    fetch("https://order-system-express-payment-hspdqcmuhv.now.sh/payment", {
       //fetch("http://localhost:3000/payment", {
       method: "POST",
       headers: {
@@ -82,7 +82,7 @@ class Checkout extends React.Component {
           history.push("/order-success");
         } else history.push("/order-error");
       })
-      .catch(function(error) {
+      .catch(error => {
         console.log(error);
         history.push("/order-error");
       });
