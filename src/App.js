@@ -1,6 +1,5 @@
-import React, { Component } from "react";
+import React from "react";
 
-import firebase from "./firebase";
 import OrderMenu from "./OrderMenu";
 
 const App = () => (
