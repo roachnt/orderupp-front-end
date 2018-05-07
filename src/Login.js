@@ -8,10 +8,11 @@ import {
   Message,
   Segment
 } from "semantic-ui-react";
+import { connect } from "react-redux";
+
 import FacebookButton from "./FacebookButton";
 import { auth } from "./firebase";
 import { loginUserAction } from "./actions/userActions";
-import { connect } from "react-redux";
 import history from "./history";
 
 class LoginForm extends React.Component {

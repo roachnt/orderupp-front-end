@@ -8,8 +8,12 @@ import {
   Message,
   Segment
 } from "semantic-ui-react";
-import { loginWithFacebook, registerWithEmail } from "./authFunctions";
+import { connect } from "react-redux";
+
 import FacebookButton from "./FacebookButton";
+import { loginUserAction } from "./actions/userActions";
+import { auth } from "./firebase";
+import history from "./history";
 
 const RegisterForm = props => (
   <div className="login-form">
@@ -32,7 +36,24 @@ const RegisterForm = props => (
         <Header as="h2" color="red" textAlign="center">
           Sign up for an account
         </Header>
-        <Form size="large" onSubmit={e => registerWithEmail(e)}>
+        <Form
+          size="large"
+          onSubmit={e => {
+            e.preventDefault();
+            const email = e.target.email.value;
+            const password = e.target.password.value;
+            auth
+              .createUserWithEmailAndPassword(email, password)
+              .then(res => props.loginUser(res))
+              .then(() => history.push("/"))
+              .catch(err => {
+                const errorCode = err.code;
+                const errorMessage = err.message;
+                console.log(errorCode);
+                console.log(errorMessage);
+              });
+          }}
+        >
           <Segment stacked>
             <Form.Input
               fluid
@@ -56,7 +77,7 @@ const RegisterForm = props => (
           </Segment>
         </Form>
         <br />
-        <FacebookButton loginWithFacebook={loginWithFacebook} />
+        <FacebookButton />
         <Message>
           Already have an account? <Link to="/login">Log in</Link>
         </Message>
@@ -65,4 +86,8 @@ const RegisterForm = props => (
   </div>
 );
 
-export default RegisterForm;
+const mapActionsToProps = {
+  loginUser: loginUserAction
+};
+
+export default connect(state => state, mapActionsToProps)(RegisterForm);

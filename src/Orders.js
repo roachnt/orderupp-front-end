@@ -34,7 +34,9 @@ class Orders extends Component {
         <h1>Past Orders</h1>
         {this.state.orders ? (
           <ul>
-            {this.state.orders.map(order => <li>{JSON.stringify(order)}</li>)}
+            {this.state.orders.map(order => (
+              <li key={order.id}>{JSON.stringify(order)}</li>
+            ))}
           </ul>
         ) : (
           <Loader active inline="centered" />

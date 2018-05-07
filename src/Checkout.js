@@ -58,7 +58,8 @@ class Checkout extends React.Component {
       this.sendPayment(null, formData);
     }
   };
-  sendPayment = (token, formData) =>
+  sendPayment = (token, formData) => {
+    history.push("/processing-payment");
     fetch("https://order-system-express-payment-qavxmglkuc.now.sh/payment", {
       //fetch("http://localhost:3000/payment", {
       method: "POST",
@@ -86,6 +87,7 @@ class Checkout extends React.Component {
         console.log(error);
         history.push("/order-error");
       });
+  };
 
   componentDidMount() {
     // Close Checkout on page navigation:

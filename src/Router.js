@@ -21,13 +21,7 @@ class RouterComponent extends React.Component {
       <Router history={history}>
         <React.Fragment>
           <Media query="(min-width: 768px)">
-            {matches =>
-              matches ? (
-                <Navbar {...this.props} />
-              ) : (
-                <MobileNavbar {...this.props} />
-              )
-            }
+            {matches => (matches ? <Navbar /> : <MobileNavbar />)}
           </Media>
           <Switch>
             <Route exact path="/" render={() => <App />} />
@@ -38,21 +32,17 @@ class RouterComponent extends React.Component {
                 this.props.user ? (
                   <div>You're already signed in!</div>
                 ) : (
-                  <LoginForm {...this.props} />
+                  <LoginForm />
                 )
               }
             />
-            <Route
-              exact
-              path="/register"
-              render={() => <RegisterForm {...this.props} />}
-            />
+            <Route exact path="/register" render={() => <RegisterForm />} />
             <Route
               exact
               path="/orders"
               render={() =>
                 this.props.user ? (
-                  <Orders {...this.props} />
+                  <Orders />
                 ) : (
                   "Please log in to view your orders."
                 )

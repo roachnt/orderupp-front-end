@@ -45,10 +45,10 @@ const Navbar = props => (
           </Menu.Item>
           {props.user ? (
             <React.Fragment>
-              <Menu.Item onClick={() => history.push("/orders")}>
+              <Menu.Item>
                 <Button
                   style={{ background: "none" }}
-                  onClick={() => history.push("/cart")}
+                  onClick={() => history.push("/orders")}
                 >
                   <Button.Content>
                     <Icon name="list ul" size="huge" />
