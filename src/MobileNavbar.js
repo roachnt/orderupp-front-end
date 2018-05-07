@@ -1,11 +1,11 @@
 import React from "react";
 import { Menu, Button, Icon, Grid, Label } from "semantic-ui-react";
-import { withRouter, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import history from "./history";
 import { loginUserAction } from "./actions/userActions";
 import { connect } from "react-redux";
 
-const MobileNavbar = withRouter(props => (
+const MobileNavbar = props => (
   <Grid className="desktop-navbar" style={{ height: "auto" }}>
     <Grid.Row style={{ paddingBottom: 0 }}>
       <Grid.Column style={{ margin: "0 auto", height: "auto" }}>
@@ -31,10 +31,10 @@ const MobileNavbar = withRouter(props => (
               <Menu.Item>
                 <Button
                   style={{ background: "none" }}
-                  onClick={() => history.push("/cart")}
+                  onClick={() => history.push("/orders")}
                 >
                   <Button.Content>
-                    <Icon name="list layout" size="huge" />
+                    <Icon name="list ul" size="huge" />
                   </Button.Content>
                 </Button>
               </Menu.Item>
@@ -74,7 +74,7 @@ const MobileNavbar = withRouter(props => (
       </Grid.Column>
     </Grid.Row>
   </Grid>
-));
+);
 
 const mapActionsToProps = {
   loginUser: loginUserAction

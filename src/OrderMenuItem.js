@@ -1,14 +1,10 @@
 import React from "react";
-import {
-  Item,
-  Checkbox,
-  Button,
-  Portal,
-  Segment,
-  Header,
-  Radio
-} from "semantic-ui-react";
+import { Item } from "semantic-ui-react";
 import remove from "lodash/remove";
+
+import PizzaOptions from "./PizzaOptions";
+import SpaghettiOptions from "./SpaghettiOptions";
+import AddItemPortal from "./AddItemPortal";
 
 // TODO handle different foods' options
 // (pizza should have toppings, pastas have choice of garlic bread or italian roll)
@@ -46,7 +42,8 @@ class OrderMenuItem extends React.Component {
   handleRadioChange = (e, data) => {
     this.setState({
       radioOptions: [data.label],
-      options: [data.label, ...this.state.checkboxOptions]
+      options: [data.label, ...this.state.checkboxOptions],
+      value: data.label.toLowerCase()
     });
   };
 
@@ -64,92 +61,26 @@ class OrderMenuItem extends React.Component {
           <Item.Description>{this.props.item.description}</Item.Description>
           <Item.Extra>
             {this.props.item.category === "pizza" ? (
-              <React.Fragment>
-                <Checkbox
-                  label="Pepperoni"
-                  onChange={this.handleCheckboxChange}
-                />
-                <Checkbox
-                  label="Italian Sausage"
-                  onChange={this.handleCheckboxChange}
-                />
-                <Checkbox
-                  label="Mushrooms"
-                  onChange={this.handleCheckboxChange}
-                />
-                <Checkbox
-                  label="Hamburger"
-                  onChange={this.handleCheckboxChange}
-                />
-                <Checkbox label="Ham" onChange={this.handleCheckboxChange} />
-                <Checkbox label="Bacon" onChange={this.handleCheckboxChange} />
-                <Checkbox label="Onions" onChange={this.handleCheckboxChange} />
-                <Checkbox
-                  label="Banana Peppers"
-                  onChange={this.handleCheckboxChange}
-                />
-                <Checkbox
-                  label="Green and Black Olives"
-                  onChange={this.handleCheckboxChange}
-                />
-                <Checkbox
-                  label="Extra Cheese"
-                  onChange={this.handleCheckboxChange}
-                />
-              </React.Fragment>
+              <PizzaOptions handleCheckboxChange={this.handleCheckboxChange} />
             ) : (
               ""
             )}
             {this.props.item.slug === "spaghetti" ? (
-              <React.Fragment>
-                <Radio
-                  label="Garlic Bread"
-                  checked={this.state.value === "garlic bread"}
-                  onClick={() => this.setState({ value: "garlic bread" })}
-                  onChange={this.handleRadioChange}
-                />
-                <Radio
-                  label="Italian Roll"
-                  checked={this.state.value === "italian roll"}
-                  onClick={() => this.setState({ value: "italian roll" })}
-                  onChange={this.handleRadioChange}
-                />
-              </React.Fragment>
+              <SpaghettiOptions
+                value={this.state.value}
+                handleRadioChange={this.handleRadioChange}
+              />
             ) : (
               ""
             )}
             <br />
-            <Portal
-              closeOnTriggerClick
-              openOnTriggerClick
-              trigger={
-                <Button
-                  color="blue"
-                  onClick={() =>
-                    this.props.addItemToOrder(
-                      this.props.item.id,
-                      this.state.options
-                    )
-                  }
-                >
-                  Add item
-                </Button>
-              }
+            <AddItemPortal
+              addItemToOrder={this.props.addItemToOrder}
+              itemId={this.props.item.id}
+              options={this.state.options}
               open={this.state.open}
-              onOpen={this.handleOpenPortal}
-            >
-              <Segment
-                color="green"
-                style={{
-                  left: 10,
-                  position: "fixed",
-                  top: 10,
-                  zIndex: 1000
-                }}
-              >
-                <Header>Item Added!</Header>
-              </Segment>
-            </Portal>
+              handleOpenPortal={this.handleOpenPortal}
+            />
           </Item.Extra>
         </Item.Content>
       </Item>

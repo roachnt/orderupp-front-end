@@ -78,11 +78,9 @@ class Cart extends React.Component {
                       </Item.Header>
                       <Item.Meta>
                         <span className="cinema">
-                          ${
-                            this.state.items[
-                              this.props.order.items[itemNumber]["itemId"]
-                            ]["price"]
-                          }
+                          ${this.state.items[
+                            this.props.order.items[itemNumber]["itemId"]
+                          ]["price"].toFixed(2)}
                         </span>
                       </Item.Meta>
                       <Item.Extra>
