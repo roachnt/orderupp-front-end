@@ -1,27 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import registerServiceWorker from "./registerServiceWorker";
-import { createStore } from "redux";
 import { Provider } from "react-redux";
 
 import "./index.css";
 import Router from "./Router";
 import firebase from "./firebase";
-import rootReducer from "./reducers/rootReducer";
-
-const store = createStore(
-  rootReducer,
-  {
-    user: localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user"))
-      : null,
-    order: localStorage.getItem("order")
-      ? JSON.parse(localStorage.getItem("order"))
-      : { items: {}, size: 0 },
-    items: null
-  },
-  window.devToolsExtension && window.devToolsExtension()
-);
+import store from "./store";
 
 const itemsRef = firebase.database().ref("items");
 let newState = [];
